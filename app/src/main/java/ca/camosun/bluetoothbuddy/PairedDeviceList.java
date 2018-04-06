@@ -21,7 +21,6 @@ public class PairedDeviceList extends AppCompatActivity {
 
     TextView deviceList;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +47,5 @@ public class PairedDeviceList extends AppCompatActivity {
                                 + pairedDevice.getAddress()
                                 + "\r\n\r\n");
         }
-
     }
 }

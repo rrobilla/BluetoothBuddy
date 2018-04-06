@@ -17,7 +17,6 @@ public class OptionsMenu extends AppCompatActivity {
     ToggleButton toggle_autoDisconnect;
     CompoundButton.OnCheckedChangeListener toggleListenerAD;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,15 +27,12 @@ public class OptionsMenu extends AppCompatActivity {
         //Create and set listener on auto disconnect toggle
         create_toggle_autoShutoffListener();
         toggle_autoDisconnect.setOnCheckedChangeListener(toggleListenerAD);
-
-
     }//end onCreate
 
     //Setup initial GUI
     private void gui_setup(){
         menuTitle = (TextView) findViewById(R.id.menuTitleText);
         menuTitle.setText("Options Menu");
-
         toggle_autoDisconnect = findViewById(R.id.toggleAutoDisconnectButton);
         toggle_autoDisconnect.setChecked(appSettings.optionGet_autoShutoff());
     }

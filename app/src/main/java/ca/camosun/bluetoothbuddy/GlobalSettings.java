@@ -6,7 +6,6 @@ import android.app.Application;
  * them from any activity
  */
 public class GlobalSettings extends Application {
-
     //Option - Auto shutoff on BT disconnect
     private static boolean option_autoShutoffOnDisconnect = true;
     public boolean optionGet_autoShutoff() {

@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     private final int deviceDisconnected = 0;
     private final GlobalSettings appSettings = new GlobalSettings();
 
+    private int justConnected = 0;
+
     //Bluetooth Adaptor
     BluetoothAdapter myBT;
     //private final static int REQUEST_ENABLE_BT = 1; //Used for BT enable request
@@ -50,8 +52,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     /* Options */
     //Options Menu button
     ImageButton optionsMenuButton;
-    //Enable BT Auto shut-off when device disconnects
-    protected boolean option_btDShut;
 
     //Connection Status
     TextView connStatus;
@@ -77,8 +77,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Options Initialization
-        optionInitialization();
         //GUI Initialization
         gui_setup();
 
@@ -168,13 +166,13 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 Log.d("Action: ", theAction);
 
                 //BT adaptor state turning on / off
-                if (theAction == BluetoothAdapter.ACTION_STATE_CHANGED) {
+                 if (theAction == BluetoothAdapter.ACTION_STATE_CHANGED) {
                     Log.d("State: ", String.valueOf(myBT.getState()));
                     if (myBT.getState() == BluetoothAdapter.STATE_ON) {
                         btToggle.setChecked(true);
                         show_bt_on();
                     }
-                    if (myBT.getState() == BluetoothAdapter.STATE_OFF){
+                    if ((myBT.getState() == BluetoothAdapter.STATE_OFF)){
                         btToggle.setChecked(false);
                         hide_bt_off();
                     }
@@ -182,20 +180,27 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
                 //BT device connected
                 else if(theAction == BluetoothDevice.ACTION_ACL_CONNECTED){
-                    //set connImg to ok
                     setConnStatusImg(deviceConnected);
+                    justConnected++;
                 }
 
                 //BT device disconnected
                 else if (theAction == BluetoothDevice.ACTION_ACL_DISCONNECTED){
-                    //setconnImg to not
-                    setConnStatusImg(deviceDisconnected);
-
-                    if (appSettings.optionGet_autoShutoff()){
+                    /* justConnected starts at 0, then gets set to 1 when a device connects,
+                     * but due to how the BT connects via my stereo, it broadcasts disconnect at
+                     * the same time for some strange reason. I am using this int flag to stop from
+                     * turning BT off until the disconnect action is triggered a second time.
+                     */
+                     if (justConnected == 1){
+                         justConnected++;
+                         return;
+                     }
+                     setConnStatusImg(deviceDisconnected);
+                     if (appSettings.optionGet_autoShutoff()){
                         myBT.disable();
                         hide_bt_off();
+                        justConnected = 0;
                     }
-
                 }
             }
         }; //end br variable assignment
@@ -215,11 +220,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         pairedButton.setVisibility(View.VISIBLE);
         connStatus.setVisibility(View.VISIBLE);
         connStatusImg.setVisibility(View.VISIBLE);
-    }
-
-    //Set initial options
-    private void optionInitialization(){
-        option_btDShut = false;
     }
 
     //Initial GUI setup and load
